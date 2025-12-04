@@ -10,142 +10,56 @@ struct ContentView: View {
     @State private var prompt: String = ""
     @State private var messages: [ChatMessage] = []
     @State private var isLoading: Bool = false
-    
-    // ZMIANA 1: Dodaj RAGManager i przełącznik
-    @StateObject private var ragManager = RAGManager()
     @State private var ragEnabled: Bool = false
     
+    @StateObject private var ragManager = RAGManager()
     private let ollamaService = OllamaService()
     
     var body: some View {
-        VStack(spacing: 0) {
-            // ZMIANA 2: Rozszerz nagłówek o przełącznik RAG i menu
-            HStack {
-                Text("\(OllamaConfig.defaultModel) chat")
-                    .font(.headline)
-                Spacer()
-                
-                // Przełącznik RAG
-                Toggle("RAG", isOn: $ragEnabled)
-                    .disabled(ragManager.documentsCount == 0)
-                    .help(ragManager.documentsCount > 0
-                          ? "Używaj kontekstu z \(ragManager.documentsCount) notatek"
-                          : "Najpierw zaindeksuj notatki")
-                
-                // Menu z opcjami
-                Menu {
-                    Button("📚 Zaindeksuj przykładowe notatki") {
-                        indexSampleNotes()
-                    }
-                    Button("🗑️ Wyczyść indeks") {
-                        ragManager.clearIndex()
-                    }
-                } label: {
-                    Image(systemName: "gear")
-                }
-            }
-            .padding()
-            
-            Divider()
-            
-            // Historia czatu (BEZ ZMIAN)
-            ScrollViewReader { proxy in
-                ScrollView {
-                    LazyVStack(spacing: 12) {
-                        ForEach(messages) { message in
-                            MessageBubble(message: message)
-                                .id(message.id)
-                        }
-                        
-                        if isLoading {
-                            HStack {
-                                ProgressView()
-                                    .scaleEffect(0.7)
-                                Text("Myślę...")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                Spacer()
-                            }
-                            .padding(.leading)
-                        }
-                    }
-                    .padding()
-                }
-                .onChange(of: messages.count) { _ in
-                    if let last = messages.last {
-                        withAnimation {
-                            proxy.scrollTo(last.id, anchor: .bottom)
-                        }
-                    }
-                }
+        TabView {
+            // Zakładka Chat
+            ChatTabView(
+                messages: $messages,
+                prompt: $prompt,
+                isLoading: $isLoading,
+                ragEnabled: $ragEnabled,
+                ragManager: ragManager,
+                ollamaService: ollamaService,
+                sendMessage: sendMessage
+            )
+            .tabItem {
+                Label("Chat", systemImage: "message.fill")
             }
             
-            Divider()
-            
-            // ZMIANA 3: Zaktualizuj tekst pod TextEditorem
-            HStack(spacing: 12) {
-                VStack(alignment: .leading, spacing: 4) {
-                    TextEditor(text: $prompt)
-                        .frame(minHeight: 40, maxHeight: 100)
-                        .padding(6)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(Color.gray.opacity(0.5))
-                        )
-                        .background(Color(NSColor.textBackgroundColor))
-                        .lineSpacing(2)
-                    
-                    // Zaktualizowany status
-                    Text(ragEnabled
-                         ? "RAG aktywny • \(ragManager.documentsCount) notatek zaindeksowanych"
-                         : "Enter = nowa linia • Kliknij przycisk, aby wysłać")
-                        .font(.caption2)
-                        .foregroundColor(ragEnabled ? .green : .secondary)
+            // Zakładka Notatki
+            NotesManagerView(ragManager: ragManager)
+                .tabItem {
+                    Label("Notatki", systemImage: "doc.text.fill")
                 }
-                
-                Button(action: sendMessage) {
-                    Image(systemName: "paperplane.fill")
-                        .foregroundColor(.white)
-                        .padding(8)
-                        .background(
-                            prompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-                                ? Color.gray
-                                : Color.blue
-                        )
-                        .clipShape(Circle())
-                }
-                .disabled(isLoading || prompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                .buttonStyle(PlainButtonStyle())
-            }
-            .padding()
         }
+        .frame(minWidth: 800, minHeight: 600)
     }
     
-    // ZMIANA 4: Przepisz funkcję sendMessage – dodaj logikę RAG
+    // Funkcje sendMessage i sendToOllama pozostają bez zmian
     private func sendMessage() {
         let trimmed = prompt.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
         
-        // Dodaj wiadomość użytkownika do historii
         let userMessage = ChatMessage(content: trimmed, isUser: true)
         messages.append(userMessage)
         prompt = ""
         isLoading = true
         
-        // Jeśli RAG jest włączony, wyszukaj kontekst
         if ragEnabled {
             ragManager.searchRelevant(query: trimmed, topK: 2) { contextChunks in
                 self.sendToOllama(userQuery: trimmed, contextFromRAG: contextChunks)
             }
         } else {
-            // Normalny chat bez RAG
             sendToOllama(userQuery: trimmed, contextFromRAG: [])
         }
     }
     
-    // ZMIANA 5: Nowa funkcja – wysyłanie do Ollamy z opcjonalnym kontekstem
     private func sendToOllama(userQuery: String, contextFromRAG: [String]) {
-        // Zbuduj historię (wszystkie wiadomości oprócz ostatniej, bo ją dodamy z kontekstem)
         var history: [ChatAPIMessage] = messages.dropLast().map { msg in
             ChatAPIMessage(
                 role: msg.isUser ? "user" : "assistant",
@@ -153,7 +67,6 @@ struct ContentView: View {
             )
         }
         
-        // Jeśli mamy kontekst z RAG, dodaj jako system message
         if !contextFromRAG.isEmpty {
             let contextString = contextFromRAG.joined(separator: "\n\n---\n\n")
             let systemPrompt = """
@@ -167,10 +80,8 @@ struct ContentView: View {
             history.insert(ChatAPIMessage(role: "system", content: systemPrompt), at: 0)
         }
         
-        // Dodaj aktualne pytanie użytkownika
         history.append(ChatAPIMessage(role: "user", content: userQuery))
         
-        // Wyślij do Ollamy
         ollamaService.sendChat(messagesHistory: history) { result in
             DispatchQueue.main.async {
                 isLoading = false
@@ -189,27 +100,8 @@ struct ContentView: View {
             }
         }
     }
-    
-    // ZMIANA 6: Nowa funkcja – indeksowanie przykładowych notatek
-    private func indexSampleNotes() {
-        let sampleNotes = [
-            "Quicksort to algorytm sortowania w miejscu. Średnia złożoność to O(n log n), ale najgorsza O(n²) występuje gdy pivot jest źle wybrany.",
-            "Indeksy B-tree w bazach danych przyspieszają SELECT, ale spowalniają INSERT i UPDATE, bo indeks musi być aktualizowany.",
-            "Overfitting w machine learning to gdy model za dobrze dopasowuje się do danych treningowych i źle generalizuje. Regularyzacja L1 i L2 pomaga to ograniczyć.",
-            "REST API używa metod HTTP: GET do odczytu, POST do tworzenia, PUT/PATCH do aktualizacji, DELETE do usuwania.",
-            "Git rebase przepisuje historię commitów, a merge tworzy nowy commit łączący. Rebase daje liniową historię, ale nie używaj go na publicznych branchach."
-        ]
-        
-        ragManager.indexDocuments(texts: sampleNotes, source: "przykładowe_notatki")
-    }
-    
-    // RESZTA BEZ ZMIAN (MessageBubble i timeString)
-    private func timeString(from date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.timeStyle = .short
-        return formatter.string(from: date)
-    }
 }
+
 
 // Wygląd pojedynczego dymka wiadomości (BEZ ZMIAN)
 struct MessageBubble: View {

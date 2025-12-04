@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		DC5421FA2EE0B49E00CF965B /* RAGMenager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC5421F92EE0B49E00CF965B /* RAGMenager.swift */; };
+		DC5422012EE253FC00CF965B /* ChatTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC5422002EE253FC00CF965B /* ChatTabView.swift */; };
+		DC5422032EE2546D00CF965B /* NotesManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC5422022EE2546D00CF965B /* NotesManagerView.swift */; };
 		DCE95E452ED1DAF300B80939 /* test_AIApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCE95E442ED1DAF300B80939 /* test_AIApp.swift */; };
 		DCE95E472ED1DAF300B80939 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCE95E462ED1DAF300B80939 /* ContentView.swift */; };
 		DCE95E492ED1DAF500B80939 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DCE95E482ED1DAF500B80939 /* Assets.xcassets */; };
@@ -20,7 +22,9 @@
 
 /* Begin PBXFileReference section */
 		DC5421F92EE0B49E00CF965B /* RAGMenager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAGMenager.swift; sourceTree = "<group>"; };
-		DCE95E412ED1DAF300B80939 /* test_AI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = test_AI.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DC5422002EE253FC00CF965B /* ChatTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTabView.swift; sourceTree = "<group>"; };
+		DC5422022EE2546D00CF965B /* NotesManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesManagerView.swift; sourceTree = "<group>"; };
+		DCE95E412ED1DAF300B80939 /* AI_chat_rag_V2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AI_chat_rag_V2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DCE95E442ED1DAF300B80939 /* test_AIApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = test_AIApp.swift; sourceTree = "<group>"; };
 		DCE95E462ED1DAF300B80939 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		DCE95E482ED1DAF500B80939 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -55,7 +59,7 @@
 		DCE95E422ED1DAF300B80939 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				DCE95E412ED1DAF300B80939 /* test_AI.app */,
+				DCE95E412ED1DAF300B80939 /* AI_chat_rag_V2.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -72,6 +76,8 @@
 				DCE95E482ED1DAF500B80939 /* Assets.xcassets */,
 				DCE95E4D2ED1DAF500B80939 /* test_AI.entitlements */,
 				DCE95E4A2ED1DAF500B80939 /* Preview Content */,
+				DC5422002EE253FC00CF965B /* ChatTabView.swift */,
+				DC5422022EE2546D00CF965B /* NotesManagerView.swift */,
 			);
 			path = test_AI;
 			sourceTree = "<group>";
@@ -87,9 +93,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		DCE95E402ED1DAF300B80939 /* test_AI */ = {
+		DCE95E402ED1DAF300B80939 /* AI_chat_rag_V2 */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = DCE95E502ED1DAF500B80939 /* Build configuration list for PBXNativeTarget "test_AI" */;
+			buildConfigurationList = DCE95E502ED1DAF500B80939 /* Build configuration list for PBXNativeTarget "AI_chat_rag_V2" */;
 			buildPhases = (
 				DCE95E3D2ED1DAF300B80939 /* Sources */,
 				DCE95E3E2ED1DAF300B80939 /* Frameworks */,
@@ -99,9 +105,9 @@
 			);
 			dependencies = (
 			);
-			name = test_AI;
+			name = AI_chat_rag_V2;
 			productName = test_AI;
-			productReference = DCE95E412ED1DAF300B80939 /* test_AI.app */;
+			productReference = DCE95E412ED1DAF300B80939 /* AI_chat_rag_V2.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -119,7 +125,7 @@
 					};
 				};
 			};
-			buildConfigurationList = DCE95E3C2ED1DAF300B80939 /* Build configuration list for PBXProject "test_AI" */;
+			buildConfigurationList = DCE95E3C2ED1DAF300B80939 /* Build configuration list for PBXProject "AI_chat_rag_V2" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -132,7 +138,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				DCE95E402ED1DAF300B80939 /* test_AI */,
+				DCE95E402ED1DAF300B80939 /* AI_chat_rag_V2 */,
 			);
 		};
 /* End PBXProject section */
@@ -155,12 +161,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DC5422032EE2546D00CF965B /* NotesManagerView.swift in Sources */,
 				DCE95E5C2ED208BD00B80939 /* Chat_message.swift in Sources */,
 				DCE95E542ED1DBD400B80939 /* OllamaService.swift in Sources */,
 				DCE95E472ED1DAF300B80939 /* ContentView.swift in Sources */,
 				DCE95E452ED1DAF300B80939 /* test_AIApp.swift in Sources */,
 				DC5421FA2EE0B49E00CF965B /* RAGMenager.swift in Sources */,
 				DCE95E5A2ED2067B00B80939 /* Model_Config.swift in Sources */,
+				DC5422012EE253FC00CF965B /* ChatTabView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -333,7 +341,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		DCE95E3C2ED1DAF300B80939 /* Build configuration list for PBXProject "test_AI" */ = {
+		DCE95E3C2ED1DAF300B80939 /* Build configuration list for PBXProject "AI_chat_rag_V2" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DCE95E4E2ED1DAF500B80939 /* Debug */,
@@ -342,7 +350,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		DCE95E502ED1DAF500B80939 /* Build configuration list for PBXNativeTarget "test_AI" */ = {
+		DCE95E502ED1DAF500B80939 /* Build configuration list for PBXNativeTarget "AI_chat_rag_V2" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DCE95E512ED1DAF500B80939 /* Debug */,
